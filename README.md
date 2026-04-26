@@ -1,5 +1,7 @@
 # ComfyUI-Streamlit-Dashboard
 
+<img width="2466" height="1175" alt="image" src="https://github.com/user-attachments/assets/b6d2aef9-85b1-43aa-8e05-894ed590df7f" />
+
 
 ## ✨ Key Features
 
