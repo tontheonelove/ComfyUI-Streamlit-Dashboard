@@ -2,7 +2,7 @@ import streamlit as st
 from comfy_utils import generate_ai_image_with_progress
 
 # 1. ตั้งค่าหน้าจอ
-st.set_page_config(page_title="Z-Image Pro Dashboard", layout="wide", page_icon="🚀")
+st.set_page_config(page_title="Z-Image Pro Studio", layout="wide", page_icon="🚀")
 
 # 2. Custom CSS
 st.markdown("""
@@ -10,7 +10,6 @@ st.markdown("""
     .main { background-color: #0e1117; }
     .stTextArea textarea { border-radius: 15px; border: 1px solid #30363d; }
     .stButton button { width: 100%; border-radius: 12px; font-weight: bold; height: 3rem; background: linear-gradient(45deg, #2ecc71, #27ae60); border: none; }
-    .css-1r6slb0 { border-radius: 20px; border: 1px solid #30363d; padding: 20px; background-color: #161b22; }
     [data-testid="stMetricValue"] { font-size: 24px; color: #2ecc71; }
     </style>
     """, unsafe_allow_html=True)
@@ -26,24 +25,40 @@ with col_t2:
 
 st.divider()
 
+# --- CONFIGURATION ---
+WORKFLOW_SETTINGS = {
+    "Z-Image Turbo": {
+        "file": "workflow/image_z_image_turbo.json",
+        "prompt_id": "57:27",
+        "seed_id": "57:3",
+        "latent_id": "57:13"
+    },
+    "Flux 2 Klein": {
+        "file": "workflow/image_flux2_text_to_image_9b.json",
+        "prompt_id": "75:74",               
+        "seed_id": "75:73",                
+        "width_id": "75:68",               
+        "height_id": "75:69",               
+        "seed_key": "noise_seed"         
+    }
+}
+
 # --- MAIN DASHBOARD ---
 col_input, col_display = st.columns([1, 2], gap="large")
 
 with col_input:
     with st.container(border=True):
-        st.subheader("⌨️ ใส่ Prompt เพื่อสร้างรูปได้เลย")
-        prompt = st.text_area("Positive Prompt", "A young woman in a sunlit room...", height=200)
+        st.subheader("⌨️ ใส่ PROMPT เพื่อสร้างรูป")
+        selected_model = st.selectbox("Select AI Model", list(WORKFLOW_SETTINGS.keys()))
+        current_config = WORKFLOW_SETTINGS[selected_model]
+        prompt = st.text_area("Positive Prompt", "A young woman in a sunlit room...", height=150)
         
         with st.expander("🛠️ Advanced Settings", expanded=True):
             seed = st.number_input("Seed", value=-1, help="-1 for random")
-            
-            # 1. เพิ่มตัวเลือกขนาดรูปภาพ
             size_option = st.selectbox(
                 "Select Aspect Ratio", 
                 ["1024x1024 (Square)", "720x1280 (Portrait)", "1280x720 (Landscape)", "1920x1080 (FHD)"]
             )
-            
-            # 2. สร้างระบบ Map ค่าข้อความไปเป็นตัวเลข (Width, Height)
             size_map = {
                 "1024x1024 (Square)": (1024, 1024),
                 "720x1280 (Portrait)": (720, 1280),
@@ -57,24 +72,50 @@ with col_input:
 with col_display:
     with st.container(border=True):
         res_placeholder = st.empty()
-        prog_placeholder = st.empty()
         
+        # ส่วนแสดงสถานะ (Status Box)
         if generate_btn:
-            try:
-                # 3. ส่งค่า width และ height เข้าไปในฟังก์ชันด้วย
-                for res in generate_ai_image_with_progress(prompt, seed, width=target_width, height=target_height):
-                    if res['status'] == 'progress':
-                        val = int((res['value'] / res['max']) * 100)
-                        prog_placeholder.progress(val, text=f"Processing... {val}%")
+            # ใช้ st.status เพื่อโชว์สถานะที่สวยงามและพับเก็บได้เมื่อเสร็จ
+            with st.status(f"🚀 Initializing {selected_model}...", expanded=True) as status:
+                status_text = st.empty()
+                prog_bar = st.progress(0)
+                
+                try:
+                    # สร้างตัวแปรเก็บชื่อ Node ปัจจุบันไว้แสดงคู่กับ %
+                    current_node = "Starting..."
                     
-                    if res['status'] == 'done':
-                        prog_placeholder.empty()
-                        st.toast("Generation Complete!", icon="🎨")
+                    for res in generate_ai_image_with_progress(prompt, seed, target_width, target_height, current_config):
+                        # 1. อัปเดตชื่อ Node ที่กำลังรัน
+                        if res['status'] == 'node_status':
+                            current_node = res['node_name']
+                            status.update(label=f"Running: {current_node}...", state="running")
+                            status_text.markdown(f"🔍 **Current Step:** `{current_node}`")
                         
-                        for img in res['images']:
-                            res_placeholder.image(img, use_container_width=False, width=600)
-                            st.download_button("📥 Download Image", img, file_name=f"ai_art_{target_width}x{target_height}.png", mime="image/png")
-            except Exception as e:
-                st.error(f"Connection Error: {e}")
+                        # 2. อัปเดต Progress Bar และแสดง % (เพิ่มส่วนนี้เข้าไป)
+                        if res['status'] == 'progress':
+                            val = int((res['value'] / res['max']) * 100)
+                            prog_bar.progress(val)
+                            # อัปเดตข้อความให้โชว์ทั้งชื่อ Node และ %
+                            status_text.markdown(f"🔍 **Current Step:** `{current_node}` (**{val}%**)")
+                        
+                        # 3. เมื่อเสร็จสมบูรณ์
+                        if res['status'] == 'done':
+                            status.update(label="Generation Complete!", state="complete", expanded=False)
+                            # เคลียร์สถานะระหว่างรอโชว์รูป
+                            status_text.empty()
+                            prog_bar.empty()
+                            st.toast("Success!", icon="🎨")
+                            
+                            for img in res['images']:
+                                res_placeholder.image(img, use_container_width=False, width=600)
+                                st.download_button(
+                                    label="📥 Download Image", 
+                                    data=img, 
+                                    file_name=f"{selected_model}_{res['seed']}.png", 
+                                    mime="image/png"
+                                )
+                except Exception as e:
+                    status.update(label="System Error", state="error")
+                    st.error(f"Error: {e}")
         else:
-            res_placeholder.info("Ready for your prompt. Press Generate to start.")
+            res_placeholder.info(f"Model: {selected_model} is ready. Press Generate to start.")
