@@ -39,6 +39,24 @@ streamlit run app.py
 ```
 
 
+## 🌐 Deploying to Production (Public Server)
+
+To access your dashboard from anywhere, use a Cloudflare Tunnel to securely expose your local Streamlit port (8501) without opening router ports:
+
+1. Install cloudflared.
+
+2. Run the tunnel:
+
+```
+cloudflared tunnel --url http://localhost:8501
+```
+
+3. Access the provided .trycloudflare.com URL on your mobile or remote device.
+
+
+
+
+
 
 
 
