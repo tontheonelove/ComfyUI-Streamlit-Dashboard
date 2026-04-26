@@ -3,6 +3,10 @@
 <img width="2466" height="1175" alt="image" src="https://github.com/user-attachments/assets/b6d2aef9-85b1-43aa-8e05-894ed590df7f" />
 
 
+## Update 🚀🚀 (26-4-26)
+
+🚀 Support Model  Z-Image Turbo , Flux2. Klein9B
+
 ## ✨ Key Features
 
 ✅Intuitive Dashboard UI: A clean, two-column layout designed for a distraction-free creative process.
