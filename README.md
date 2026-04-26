@@ -25,9 +25,9 @@ pip install -r requirements.txt
 ```
 3. Prepare ComfyUI:
 
-Ensure ComfyUI is running locally (default: 127.0.0.1:8188).
+  - Ensure ComfyUI is running locally (default: 127.0.0.1:8188).
 
-Load the provided image_z_image_turbo.json workflow into your ComfyUI to ensure all custom nodes are present.
+  - Load the provided image_z_image_turbo.json workflow into your ComfyUI to ensure all custom nodes are present.
 
 4. Run the App:
 
