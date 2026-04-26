@@ -55,6 +55,23 @@ cloudflared tunnel --url http://localhost:8501
 
 
 
+## ☁️ Running on RunPod / Cloud GPU
+
+If you don't have a local GPU , you can run this on RunPod:
+
+1. Deploy a ComfyUI Pod: Use the official ComfyUI template.
+
+2. Expose Ports: Ensure ports 8188 (ComfyUI) and 8501 (Streamlit) are exposed in the Pod settings.
+
+3. Update comfy_utils.py:
+ 
+Change server_address from 127.0.0.1:8188 to your RunPod's public IP/Proxy address.
+
+4. Launch: Open the web terminal and run streamlit run app.py --server.port 8501.
+
+
+
+
 
 
 
