@@ -14,8 +14,8 @@
 1. Clone the Repository:
 
 ```
-git clone https://github.com/your-username/Z-Image-Pro-Studio.git
-cd Z-Image-Pro-Studio
+git clone https://github.com/tontheonelove/ComfyUI-Streamlit-Dashboard
+cd ComfyUI-Streamlit-Dashboard
 ```
 
 2. Install Dependencies:
