@@ -3,10 +3,13 @@
 <img width="1781" height="811" alt="image" src="https://github.com/user-attachments/assets/4fe71613-77d0-4eac-bed0-0f0354f5f730" />
 
 
+## Update 🚀🚀 (27-4-26)
+
+🚀 Support Multiplatform (You can select between Comfyui locally and Comfyui Runpod)  🔥
 
 ## Update 🚀🚀 (26-4-26)
 
-🚀 Support Model  Z-Image Turbo , Flux2. Klein9B
+🚀 Support Model  Z-Image Turbo , Flux2. Klein9B  
 
 ## ✨ Key Features
 
