@@ -24,6 +24,8 @@
 ✅One-Click Download: Instantly save your generated high-resolution images.
 
 ✅Support Computer / Ipad / Mobile UI
+ 
+🔥 Require  Python3.10 +
 
 
 ## 🛠️ Local Installation
