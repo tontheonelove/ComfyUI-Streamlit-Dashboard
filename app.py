@@ -14,21 +14,36 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+# --- SIDEBAR: Connection Settings ---
+with st.sidebar:
+    st.title("🌐 Server Settings")
+    cloud_mode = st.toggle("Enable Cloud Mode (RunPod)", value=False)
+    
+    if cloud_mode:
+        # ใส่ URL RunPod ของคุณที่นี่ (แนะนำให้ใส่ค่าเริ่มต้นไว้เลย)
+        runpod_url = st.text_input("RunPod URL", "xxxxxxxxx-8188.proxy.runpod.net")
+        active_url = runpod_url.replace("https://", "").replace("http://", "").strip("/")
+        st.info("☁️ Status: Connected to Cloud")
+    else:
+        active_url = "127.0.0.1:8188"
+        st.success("🏠 Status: Connected Locally")
+
 # --- HEADER SECTION ---
 col_t1, col_t2 = st.columns([3, 1])
 with col_t1:
-    st.title("🚀 Z-Image Pro Studio")
+    st.title("🚀 AI Studio WebUI")
     st.caption("Advanced AI Generation Dashboard | Powered by TON LIKE IT ❤️")
 
 with col_t2:
-    st.metric(label="GPU Status", value="Ready", delta="Online")
+    status_label = "Cloud GPU" if cloud_mode else "Local GPU"
+    st.metric(label=status_label, value="Ready", delta="Online")
 
 st.divider()
 
 # --- CONFIGURATION ---
 WORKFLOW_SETTINGS = {
     "Z-Image Turbo": {
-        "file": "workflow/image_z_image_turbo.json",
+        "file": "workflow/image_z_image_turbo_runpod.json",
         "prompt_id": "57:27",
         "seed_id": "57:3",
         "latent_id": "57:13"
@@ -73,35 +88,30 @@ with col_display:
     with st.container(border=True):
         res_placeholder = st.empty()
         
-        # ส่วนแสดงสถานะ (Status Box)
         if generate_btn:
-            # ใช้ st.status เพื่อโชว์สถานะที่สวยงามและพับเก็บได้เมื่อเสร็จ
             with st.status(f"🚀 Initializing {selected_model}...", expanded=True) as status:
                 status_text = st.empty()
                 prog_bar = st.progress(0)
                 
                 try:
-                    # สร้างตัวแปรเก็บชื่อ Node ปัจจุบันไว้แสดงคู่กับ %
                     current_node = "Starting..."
                     
-                    for res in generate_ai_image_with_progress(prompt, seed, target_width, target_height, current_config):
-                        # 1. อัปเดตชื่อ Node ที่กำลังรัน
+                    # ส่ง active_url และ cloud_mode เข้าไปในฟังก์ชัน
+                    for res in generate_ai_image_with_progress(
+                        prompt, seed, target_width, target_height, current_config, active_url, cloud_mode
+                    ):
                         if res['status'] == 'node_status':
                             current_node = res['node_name']
                             status.update(label=f"Running: {current_node}...", state="running")
                             status_text.markdown(f"🔍 **Current Step:** `{current_node}`")
                         
-                        # 2. อัปเดต Progress Bar และแสดง % (เพิ่มส่วนนี้เข้าไป)
                         if res['status'] == 'progress':
                             val = int((res['value'] / res['max']) * 100)
                             prog_bar.progress(val)
-                            # อัปเดตข้อความให้โชว์ทั้งชื่อ Node และ %
                             status_text.markdown(f"🔍 **Current Step:** `{current_node}` (**{val}%**)")
                         
-                        # 3. เมื่อเสร็จสมบูรณ์
                         if res['status'] == 'done':
                             status.update(label="Generation Complete!", state="complete", expanded=False)
-                            # เคลียร์สถานะระหว่างรอโชว์รูป
                             status_text.empty()
                             prog_bar.empty()
                             st.toast("Success!", icon="🎨")
