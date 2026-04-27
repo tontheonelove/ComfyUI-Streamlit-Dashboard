@@ -52,6 +52,34 @@ streamlit run app.py
 ```
 
 
+## 🛠️ Local Installation (Virtual Environment [VENV])
+1. Clone the Repository:
+
+```
+git clone https://github.com/tontheonelove/ComfyUI-Streamlit-Dashboard
+cd ComfyUI-Streamlit-Dashboard
+python -m venv venv
+venv\Scripts\activate
+```
+
+2. Install Dependencies:
+Make sure you have Python 3.10+ installed.
+```
+pip install -r requirements.txt
+```
+3. Prepare ComfyUI:
+
+    - Ensure ComfyUI is running locally (default: 127.0.0.1:8188).
+
+    - Load the provided yourworkflow.json  workflow into your ComfyUI to ensure all custom nodes are present.
+
+4. Run the App:
+
+```
+streamlit run app.py
+```
+
+
 ## 🌐 Deploying to Production (Public Server)
 
 To access your dashboard from anywhere, use a Cloudflare Tunnel to securely expose your local Streamlit port (8501) without opening router ports:
