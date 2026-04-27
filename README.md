@@ -1,4 +1,4 @@
-# ComfyUI-Streamlit-Dashboard
+# ComfyUI-Studio-Dashboard-API
 
 <img width="1781" height="811" alt="image" src="https://github.com/user-attachments/assets/4fe71613-77d0-4eac-bed0-0f0354f5f730" />
 
